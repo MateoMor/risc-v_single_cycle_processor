@@ -65,19 +65,34 @@ risc-v_single_cycle_processor/
 │   ├── NextPC.sv               # Next PC selector (PC+4 or ALURes)
 │   └── RUDataWr.sv             # Register write data selector
 │
-├── I_O_Implementation/         # FPGA I/O modules
+├── I_O_Implementation/              # FPGA I/O modules
 │   ├── RiscV_SingleCycle_FPGA.sv    # ⭐ Top module for FPGA synthesis
+│   ├── RiscV_SingleCycle_FPGA_tb.sv # FPGA wrapper testbench
+│   ├── test_display.sh              # Script to test display modules (Linux)
+│   ├── test_display.bat             # Script to test display modules (Windows)
 │   ├── SevenSegmentDisplay/         # 7-segment display drivers
 │   │   ├── SevenSegmentDisplay.sv   # Hex to 7-segment decoder
-│   │   └── DisplayController.sv     # 8-display controller for 32-bit values
+│   │   ├── DisplayController.sv     # 8-display controller for 32-bit values
+│   │   └── *_tb.sv                  # Testbenches for display modules
+│   ├── 7_segments_test/             # Standalone 7-segment test project
+│   │   ├── SevenSegTest.sv          # Simple test for FPGA displays
+│   │   ├── SevenSegTest.qpf/.qsf    # Quartus project files
+│   │   └── test_seven_seg.sh/.bat   # Test scripts
 │   └── programs/                    # FPGA-specific programs
+│       └── display_test.hex         # Test program for 7-segment display
+│
+├── diagram/                    # Architecture diagrams
+│   └── risc-v_diagram.png      # Processor block diagram
 │
 ├── test_programs/              # Assembly programs in binary format
+│   └── program.hex             # Default test program
 │
 ├── RiscV_SingleCycle.sv        # Main processor module (simulation)
 ├── RiscV_SingleCycle_tb.sv     # Top-level testbench
-├── run_test.sh                 # Script to run simulation
-└── test_display.sh             # Script to test 7-segment modules
+├── Risc-V_processor.qpf        # Quartus project file
+├── Risc-V_processor.qsf        # Quartus settings file
+├── run_test.sh                 # Script to run simulation (Linux)
+└── run_test.bat                # Script to run simulation (Windows)
 ```
 
 ## Supported Instructions
@@ -112,15 +127,25 @@ risc-v_single_cycle_processor/
 2. **Run the processor simulation**
 
    ```bash
+   # Linux/macOS
    chmod +x run_test.sh
    ./run_test.sh
+   
+   # Windows
+   run_test.bat
    ```
 
 3. **Test the 7-segment display modules**
 
    ```bash
+   # Linux/macOS
+   cd I_O_Implementation
    chmod +x test_display.sh
    ./test_display.sh
+   
+   # Windows
+   cd I_O_Implementation
+   test_display.bat
    ```
 
 4. **View waveforms (optional)**
@@ -131,10 +156,12 @@ risc-v_single_cycle_processor/
 ### FPGA Deployment
 
 1. Open **Intel Quartus Prime**
-2. Create a new project and add all `.sv` files
+2. Open the project file `Risc-V_processor.qpf`
 3. Set `I_O_Implementation/RiscV_SingleCycle_FPGA.sv` as the **top-level entity**
 4. Assign pins according to your FPGA board (DE2-115, DE10-Lite, etc.)
 5. Compile and program the FPGA
+
+> **Note:** A standalone 7-segment test project is available in `I_O_Implementation/7_segments_test/` for testing display functionality independently.
 
 ## Tech Stack
 
@@ -172,6 +199,17 @@ It works well as a starter boilerplate for **computer architecture courses, FPGA
 
 *Source: "Arquitectura de Computadoras con RISC-V" by Jaramillo Villegas et al., Universidad Tecnológica de Pereira*
 
+## Testing Status
+
+| Test Suite           | Status |
+| -------------------- | ------ |
+| R-type instructions  | ✅ Passed |
+| I-type instructions  | ✅ Passed |
+| Load/Store           | ✅ Passed |
+| Branch instructions  | ✅ Passed |
+| Jump instructions    | ✅ Passed |
+| FPGA deployment      | ✅ Working |
+| 7-segment display    | ✅ Working |
 
 ## Acknowledgments
 
