@@ -199,18 +199,6 @@ It works well as a starter boilerplate for **computer architecture courses, FPGA
 
 *Source: "Arquitectura de Computadoras con RISC-V" by Jaramillo Villegas et al., Universidad Tecnológica de Pereira*
 
-## Testing Status
-
-| Test Suite           | Status |
-| -------------------- | ------ |
-| R-type instructions  | ✅ Passed |
-| I-type instructions  | ✅ Passed |
-| Load/Store           | ✅ Passed |
-| Branch instructions  | ✅ Passed |
-| Jump instructions    | ✅ Passed |
-| FPGA deployment      | ✅ Working |
-| 7-segment display    | ✅ Working |
-
 ## Acknowledgments
 
 Based on "Arquitectura de Computadoras con RISC-V" by Jaramillo Villegas et al., Universidad Tecnológica de Pereira.
