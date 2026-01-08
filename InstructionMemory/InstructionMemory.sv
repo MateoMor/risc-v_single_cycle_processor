@@ -15,7 +15,6 @@ module InstructionMemory #(
         end
         
         // Load the program from the file into memory (overwrites NOPs)
-        //$readmemh(PROGRAM_FILE, mem); // Hexadecimal format
         $readmemb(PROGRAM_FILE, mem);  // Binary format
 
         // Display initialization information
@@ -23,6 +22,7 @@ module InstructionMemory #(
         $display("   Size: %0d instructions (%0d bytes)", MEM_SIZE, MEM_SIZE*4);
         $display("   Address width: %0d bits", ADDR_WIDTH);
         $display("   Max address: 0x%08h", (MEM_SIZE-1)*4);
+        $display("   Program loaded: 20 instructions");
     end
 
     // Address alignment: remove the 2 least significant bits (word alignment for 32-bit instructions)

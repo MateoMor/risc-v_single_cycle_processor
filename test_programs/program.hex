@@ -5,3 +5,19 @@
 00000000100101000000100100110011 // add  x18, x8, x9
 00000001001000000010000000100011 // sw   x18, 0(x0)
 00000000000000000010010100000011 // lw   x10, 0(x0)
+// Codigo para instrucciones tipo B
+00000000101000000000011010010011 // addi x13, x0, 10  (x13 = 10, initial value)
+00000000010000000000010110010011 // addi x11, x0, 4   (x11 = 4)
+00000000010000000000011000010011 // addi x12, x0, 4   (x12 = 4)
+00000000110001011000010001100011 // beq  x11, x12, 4  (branch to PC+4 if x11==x12, skip next instruction)
+00000000010100000000011010010011 // addi x13, x0, 5   (x13 = 5, should be SKIPPED if beq taken)
+00000001010000000000011110010011 // addi x15, x0, 20  (x15 = 20, target after branch)
+00000001111000000000100000010011 // addi x16, x0, 30  (x16 = 30)
+// Codigo para instrucciones tipo J
+00000000101000000000101000010011 // addi x20, x0, 10        (x20 = 10, inicializa x20)
+00000000110000000000000011101111 // jal x1, 12               (x1 = PC+4, salta 12 bytes a addi x22, x0, 5)
+00000000000000000000100001100011 // beq x0, x0, 16        (SALTADA por JAL - verificacion de condicion)
+00000001111000000000101000010011 // addi x20, x0, 30       (SALTADA por JAL - modifica x20 si se ejecutara)
+00000000010100000000101100010011 // addi x22, x0, 5        (Target de JAL - x22 = 5)
+00000000000000001000101111100111 // jalr x0, x1, 0         (Salta a x1 = beq, x0 descarta retorno)
+00000000000000000000000000010011 // addi x0, x0, 0         (NOP - fin del programa)        

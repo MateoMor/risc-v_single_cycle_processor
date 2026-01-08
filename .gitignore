@@ -21,7 +21,6 @@
 *.tmp
 *.qmsg
 *.cmp
-*.asm
 *.map
 *.fit
 *.sta

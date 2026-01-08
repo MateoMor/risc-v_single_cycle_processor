@@ -30,7 +30,8 @@ module SevenSegmentDisplay(
     // Decodificación para cada dígito hexadecimal
     always_comb begin
         case (hex_value)
-            4'h0: segments = 7'b1000000; // 0
+            // 4'h0: segments = 7'b1000000; // 0
+            4'h0: segments = 7'b1111110; // 0
             4'h1: segments = 7'b1111001; // 1
             4'h2: segments = 7'b0100100; // 2
             4'h3: segments = 7'b0110000; // 3

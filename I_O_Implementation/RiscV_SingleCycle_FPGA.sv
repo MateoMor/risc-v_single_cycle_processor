@@ -5,36 +5,35 @@
  * Características:
  * - Memory-mapped I/O para displays de 7 segmentos
  * - Dirección 0xFFFFFFFC reservada para el display
- * - Muestra valores de 32 bits en formato hexadecimal
+ * - Muestra valores de 24 bits en formato hexadecimal (6 displays)
+ * - Visualización de registros mediante switches
  * 
  * @input  clk    => Señal de reloj de la FPGA
  * @input  reset  => Señal de reset (activo alto)
- * @output HEX0-7 => Salidas para 8 displays de 7 segmentos
+ * @input  SW[4:0]=> Selector de registro (0-31)
+ * @output HEX0-5 => Salidas para 6 displays de 7 segmentos
  * 
- * Uso desde software:
- *   # Escribir 0x12345678 al display
- *   lui  x5, 0xFFFFF      # Cargar dirección alta
- *   addi x5, x5, 0xFFC    # Completar dirección: 0xFFFFFFFC
- *   lui  x6, 0x12345      # Valor a mostrar (parte alta)
- *   addi x6, x6, 0x678    # Valor a mostrar (parte baja)
- *   sw   x6, 0(x5)        # Escribir al display
+ * Los switches SW[4:0] seleccionan qué registro mostrar:
+ *   00000 = x0, 00001 = x1, ..., 11111 = x31
  */
 module RiscV_SingleCycle_FPGA #(
     parameter IMEM_SIZE = 128,
-    parameter PROGRAM_FILE = "test_programs/program.hex"
+    parameter PROGRAM_FILE = "../test_programs/program.hex"
 )(
     input logic clk,
     input logic reset,
+    input logic [4:0] SW,  // Switches para seleccionar registro (0-31)
     
-    // Displays de 7 segmentos (activo bajo)
+    // Displays de 7 segmentos (activo bajo) - 6 displays
     output logic [6:0] HEX0,  // Nibble [3:0]
     output logic [6:0] HEX1,  // Nibble [7:4]
     output logic [6:0] HEX2,  // Nibble [11:8]
     output logic [6:0] HEX3,  // Nibble [15:12]
     output logic [6:0] HEX4,  // Nibble [19:16]
     output logic [6:0] HEX5,  // Nibble [23:20]
-    output logic [6:0] HEX6,  // Nibble [27:24]
-    output logic [6:0] HEX7   // Nibble [31:28]
+    
+    // Debug ports (para testbench)
+    output logic [31:0] debug_selected_register
 );
 
     // ========== Dirección Memory-Mapped del Display ==========
@@ -89,6 +88,9 @@ module RiscV_SingleCycle_FPGA #(
     
     // Display Register
     logic [31:0] display_register;
+    
+    // Register selection for display
+    logic [31:0] selected_register;
     
     // Memory control signals
     logic is_display_write;
@@ -172,7 +174,9 @@ module RiscV_SingleCycle_FPGA #(
         .DataWR(RU_DataWr),
         .RUWr(RUWr),
         .ru_rs1(ru_rs1),
-        .ru_rs2(ru_rs2)
+        .ru_rs2(ru_rs2),
+        .reg_select(SW),              // Selector de registro desde switches
+        .reg_out(selected_register)   // Salida del registro seleccionado
     );
     
     // Immediate Generator
@@ -242,16 +246,30 @@ module RiscV_SingleCycle_FPGA #(
     );
     
     // ========== Display Controller ==========
+    // Muestra el registro seleccionado por los switches SW[4:0]
+    // DisplayController ahora solo recibe 24 bits para 6 displays
+    
+    // Limpiar valores 'x' en los 24 bits inferiores antes de mostrar
+    logic [23:0] clean_register_display;
+    genvar i;
+    generate
+        for (i = 0; i < 24; i = i + 1) begin : clean_display_bits
+            assign clean_register_display[i] = (selected_register[i] === 1'bx) ? 1'b0 : selected_register[i];
+        end
+    endgenerate
+    
     DisplayController display_ctrl (
-        .data_to_display(display_register),
+        .data_to_display(clean_register_display),  // Pasar valor limpio sin 'x'
         .hex0(HEX0),
         .hex1(HEX1),
         .hex2(HEX2),
         .hex3(HEX3),
         .hex4(HEX4),
-        .hex5(HEX5),
-        .hex6(HEX6),
-        .hex7(HEX7)
+        .hex5(HEX5)
     );
+    
+    // ========== Debug Ports ==========
+    // Exponer selected_register para verificación en testbench
+    assign debug_selected_register = selected_register;
 
 endmodule

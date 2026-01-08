@@ -16,7 +16,7 @@ module DataMemory(
                 SH   = 3'b001,
                 SW   = 3'b010;
 
-    logic [7:0] dm [0:8191]; // 8 KiB
+    logic [7:0] dm [0:200]; // 8 KiB
 
     // Read
     always @* begin
